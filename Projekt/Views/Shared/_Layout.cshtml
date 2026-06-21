@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] – Zadania Domowe</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a class="brand" href="/Tasks">📚 Zadania Domowe</a>
+            <div class="nav-links">
+                <a href="/Tasks">Lista zadań</a>
+                <a href="/Tasks/Create" class="btn-nav">+ Nowe zadanie</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">✅ @TempData["Success"]</div>
+        }
+
+        @RenderBody()
+    </main>
+
+    <footer>
+        <p> crazy application </p>
+    </footer>
+</body>
+</html>

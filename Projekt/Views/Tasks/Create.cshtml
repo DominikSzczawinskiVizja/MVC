@@ -1,0 +1,43 @@
+@model HomeworkTask
+@{
+    ViewData["Title"] = "Nowe zadanie";
+}
+
+<div class="form-page">
+    <div class="form-header">
+        <a href="/Tasks" class="back-link">← Wróć do listy</a>
+        <h1>➕ Nowe zadanie</h1>
+    </div>
+
+    <div class="form-card">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label asp-for="Description"></label>
+                <input asp-for="Description" class="form-control" placeholder="np. Napisać wypracowanie z polskiego..." />
+                <span asp-validation-for="Description" class="field-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Deadline"></label>
+                <input asp-for="Deadline" type="date" class="form-control" />
+                <span asp-validation-for="Deadline" class="field-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Status"></label>
+                <select asp-for="Status" class="form-control">
+                    <option value="ToDo">⏳ Do zrobienia</option>
+                    <option value="InProgress">🔄 W trakcie</option>
+                    <option value="Done">✅ Zrobione</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <a href="/Tasks" class="btn btn-outline">Anuluj</a>
+                <button type="submit" class="btn btn-primary">Dodaj zadanie</button>
+            </div>
+        </form>
+    </div>
+</div>

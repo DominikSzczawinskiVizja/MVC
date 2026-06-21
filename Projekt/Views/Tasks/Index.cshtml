@@ -1,0 +1,78 @@
+@model List<HomeworkTask>
+@{
+    ViewData["Title"] = "Lista zadań";
+    var filter = ViewBag.Filter as string ?? "All";
+}
+
+<div class="page-header">
+    <div>
+        <h1>Zadanka</h1>
+        <p class="subtitle">@Model.Count zadań @(filter == "All" ? "łącznie" : $"– filtr: {filter}")</p>
+    </div>
+    <a href="/Tasks/Create" class="btn btn-primary">+ Dodaj zadanie</a>
+</div>
+
+<div class="filter-bar">
+    <span>Filtruj:</span>
+    <a href="/Tasks" class="filter-btn @(filter == "All" ? "active" : "")">Wszystkie</a>
+    <a href="/Tasks?filter=ToDo" class="filter-btn todo @(filter == "ToDo" ? "active" : "")">Do zrobienia</a>
+    <a href="/Tasks?filter=InProgress" class="filter-btn inprogress @(filter == "InProgress" ? "active" : "")">W trakcie</a>
+    <a href="/Tasks?filter=Done" class="filter-btn done @(filter == "Done" ? "active" : "")">Zrobione</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <p>Brak zadań!</p>
+    </div>
+}
+else
+{
+    <div class="task-grid">
+        @foreach (var task in Model)
+        {
+            var isOverdue = task.Deadline < DateTime.Today && task.Status != TodoStatus.Done;
+            <div class="task-card @task.Status.ToString().ToLower() @(isOverdue ? "overdue" : "")">
+                <div class="task-card-header">
+                    <span class="status-badge @task.Status.ToString().ToLower()">
+                        @(task.Status switch {
+                            TodoStatus.ToDo => "⏳ Do zrobienia",
+                            TodoStatus.InProgress => "🔄 W trakcie",
+                            TodoStatus.Done => "✅ Zrobione",
+                            _ => task.Status.ToString()
+                        })
+                    </span>
+                    @if (isOverdue)
+                    {
+                        <span class="overdue-badge">⚠️ Przeterminowane</span>
+                    }
+                </div>
+
+                <h3 class="task-desc">@task.Description</h3>
+
+                <div class="task-meta">
+                    <span class="deadline-label">
+                        @task.Deadline.ToString("dd.MM.yyyy")
+                        @if (task.Status != TodoStatus.Done)
+                        {
+                            var days = (task.Deadline - DateTime.Today).Days;
+                            if (days == 0) { <em>(dzisiaj!)</em> }
+                            else if (days == 1) { <em>(jutro)</em> }
+                            else if (days > 0) { <em>(za @days dni)</em> }
+                            else { <em>(@Math.Abs(days) dni temu)</em> }
+                        }
+                    </span>
+                </div>
+
+                <div class="task-actions">
+                    <a href="/Tasks/Details/@task.Id" class="btn btn-sm btn-outline">Szczegóły</a>
+                    <a href="/Tasks/Edit/@task.Id" class="btn btn-sm btn-secondary">Edytuj</a>
+                    <form method="post" action="/Tasks/Delete/@task.Id" onsubmit="return confirm('Usunąć to zadanie?')" style="display:inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-danger">Usuń</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}
